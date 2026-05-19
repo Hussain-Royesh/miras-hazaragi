@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(node -e \"const s = require\\('stripe'\\); console.log\\(require\\('./node_modules/stripe/package.json'\\).version\\)\")",
+      "Bash(node -e \"const t = require\\('./node_modules/stripe/types/index.d.ts'\\); console.log\\('ok'\\)\")",
+      "Bash(node -e \"const s = require\\('stripe'\\); const sc = new s\\('sk_test_x', {apiVersion: '2025-02-24.acacia'}\\); console.log\\('ok'\\)\")",
+      "Bash(npx next *)",
+      "Bash(curl *)",
+      "Bash(npx prisma *)",
+      "Bash(sqllocaldb info *)",
+      "Bash(sqllocaldb start *)",
+      "PowerShell(Get-Service *)",
+      "PowerShell(sc query *)",
+      "Bash(sc.exe query *)",
+      "Bash(reg query *)",
+      "Bash(sqllocaldb.exe info *)",
+      "Bash(sqlcmd -S \"\\(localdb\\)\\\\MSSQLLocalDB\" -Q \"SELECT name FROM sys.databases WHERE name = 'miras'\")",
+      "Bash(npm run *)",
+      "Bash(Remove-Item -Recurse -Force \"C:\\\\Users\\\\Royesh\\\\Desktop\\\\MAUI\\\\Miras\\\\prisma\\\\migrations\" -ErrorAction SilentlyContinue)",
+      "Bash(Remove-Item -Force \"C:\\\\Users\\\\Royesh\\\\Desktop\\\\MAUI\\\\Miras\\\\prisma\\\\dev.db\" -ErrorAction SilentlyContinue)",
+      "Bash(Write-Host \"Done\")",
+      "PowerShell(sqllocaldb info *)",
+      "WebFetch(domain:images.unsplash.com)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Royesh\\\\Desktop\\\\MAUI\\\\Miras\" -Recurse -File | Where-Object { $_.FullName -notmatch \"node_modules\" } | Select-Object -ExpandProperty FullName)",
+      "PowerShell(winget install *)",
+      "Bash(node -e ' *)",
+      "PowerShell(cd \"C:\\\\Users\\\\Royesh\\\\Desktop\\\\MAUI\\\\Miras\"; $env:DATABASE_URL=\"postgresql://neondb_owner:npg_kxd6IuMy7oim@ep-young-rice-apn32zfu.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require\"; npx prisma db push 2>&1)",
+      "PowerShell(cd \"C:\\\\Users\\\\Royesh\\\\Desktop\\\\MAUI\\\\Miras\"; $env:DATABASE_URL=\"postgresql://neondb_owner:npg_kxd6IuMy7oim@ep-young-rice-apn32zfu.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require\"; npx prisma generate 2>&1)",
+      "PowerShell(npm run *)"
+    ]
+  }
+}

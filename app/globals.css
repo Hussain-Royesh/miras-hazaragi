@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --green:   #4B5E3A;
+  --green-d: #3A4A2C;
+  --green-l: #6B7E5A;
+  --gold:    #C4922A;
+  --gold-l:  #D4A84A;
+  --cream:   #FAF7F2;
+  --cream-d: #F0EBE0;
+  --offwh:   #FDFCFA;
+  --text:    #2A2A2A;
+  --text-m:  #5A5A5A;
+  --border:  rgba(75, 94, 58, 0.15);
+  --trans:   0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-jost), sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--cream); }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+/* ── Persian / Dari RTL mode ── */
+html.lang-fa,
+html.lang-fa body {
+  font-family: var(--font-vazirmatn), Tahoma, Arial, sans-serif;
+}
+html.lang-fa .font-serif,
+html.lang-fa .font-sans {
+  font-family: var(--font-vazirmatn), Tahoma, Arial, sans-serif;
+}
