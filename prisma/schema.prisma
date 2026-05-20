@@ -41,6 +41,7 @@ model Collection {
   tag       String
   color     String   @default("#3A4A2C")
   imageUrl  String?
+  category  String?
   active    Boolean  @default(true)
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())

@@ -2,14 +2,22 @@
 import { useEffect, useState } from 'react'
 import ImageUpload from '@/components/admin/ImageUpload'
 
-interface Collection { id: string; name: string; tag: string; color: string; imageUrl: string | null; active: boolean; sortOrder: number }
-interface EditState { id: string; name: string; tag: string; color: string; imageUrl: string }
+interface Collection { id: string; name: string; tag: string; color: string; imageUrl: string | null; category: string | null; active: boolean; sortOrder: number }
+interface EditState { id: string; name: string; tag: string; color: string; imageUrl: string; category: string }
+
+const CATEGORIES = [
+  { value: '', label: 'All Products (no filter)' },
+  { value: 'khamak', label: 'Khamak' },
+  { value: 'dress', label: 'Dress' },
+  { value: 'accessories', label: 'Accessories' },
+  { value: 'embroidered', label: 'Embroidered' },
+]
 
 export default function AdminCollections() {
   const [cols, setCols] = useState<Collection[]>([])
   const [loading, setLoading] = useState(true)
   const [adding, setAdding] = useState(false)
-  const [addForm, setAddForm] = useState({ name: '', tag: '', color: '#3A4A2C', imageUrl: '' })
+  const [addForm, setAddForm] = useState({ name: '', tag: '', color: '#3A4A2C', imageUrl: '', category: '' })
   const [editState, setEditState] = useState<EditState | null>(null)
   const [saving, setSaving] = useState(false)
 
@@ -22,9 +30,9 @@ export default function AdminCollections() {
     await fetch('/api/admin/collections', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...addForm, imageUrl: addForm.imageUrl || null }),
+      body: JSON.stringify({ ...addForm, imageUrl: addForm.imageUrl || null, category: addForm.category || null }),
     })
-    setSaving(false); setAdding(false); setAddForm({ name: '', tag: '', color: '#3A4A2C', imageUrl: '' }); load()
+    setSaving(false); setAdding(false); setAddForm({ name: '', tag: '', color: '#3A4A2C', imageUrl: '', category: '' }); load()
   }
 
   const saveEdit = async (id: string) => {
@@ -33,7 +41,7 @@ export default function AdminCollections() {
     await fetch(`/api/admin/collections/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: editState.name, tag: editState.tag, color: editState.color, imageUrl: editState.imageUrl || null }),
+      body: JSON.stringify({ name: editState.name, tag: editState.tag, color: editState.color, imageUrl: editState.imageUrl || null, category: editState.category || null }),
     })
     setSaving(false); setEditState(null); load()
   }
@@ -81,7 +89,7 @@ export default function AdminCollections() {
           className="bg-white p-6 mb-6 space-y-4"
           style={{ border: '1px solid rgba(75,94,58,0.1)' }}
         >
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-4 gap-4">
             <div>
               <label className="block font-sans text-[0.65rem] tracking-[0.1em] uppercase mb-1" style={{ color: '#5A5A5A' }}>Name</label>
               <input required value={addForm.name} onChange={e => setAddForm(f => ({ ...f, name: e.target.value }))} className={inputCls} style={inputStyle} />
@@ -89,6 +97,12 @@ export default function AdminCollections() {
             <div>
               <label className="block font-sans text-[0.65rem] tracking-[0.1em] uppercase mb-1" style={{ color: '#5A5A5A' }}>Tag / Label</label>
               <input required value={addForm.tag} onChange={e => setAddForm(f => ({ ...f, tag: e.target.value }))} className={inputCls} style={inputStyle} placeholder="e.g. New Arrival" />
+            </div>
+            <div>
+              <label className="block font-sans text-[0.65rem] tracking-[0.1em] uppercase mb-1" style={{ color: '#5A5A5A' }}>Explore → Filter</label>
+              <select value={addForm.category} onChange={e => setAddForm(f => ({ ...f, category: e.target.value }))} className={inputCls} style={inputStyle}>
+                {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+              </select>
             </div>
             <div>
               <label className="block font-sans text-[0.65rem] tracking-[0.1em] uppercase mb-1" style={{ color: '#5A5A5A' }}>Colour</label>
@@ -131,7 +145,7 @@ export default function AdminCollections() {
           <table className="w-full">
             <thead>
               <tr style={{ borderBottom: '1px solid rgba(75,94,58,0.1)' }}>
-                {['Image', 'Collection', 'Tag', 'Colour', 'Active', ''].map(h => (
+                {['Image', 'Collection', 'Tag', 'Explore Filter', 'Colour', 'Active', ''].map(h => (
                   <th key={h} className="text-left px-4 py-3 font-sans text-[0.65rem] tracking-[0.1em] uppercase" style={{ color: '#5A5A5A' }}>{h}</th>
                 ))}
               </tr>
@@ -161,6 +175,16 @@ export default function AdminCollections() {
                         className="w-full px-3 py-1.5 font-sans text-[0.82rem] outline-none"
                         style={{ border: '1px solid rgba(75,94,58,0.3)', color: '#2A2A2A' }}
                       />
+                    </td>
+                    <td className="px-4 py-3">
+                      <select
+                        value={editState.category}
+                        onChange={e => setEditState(s => s ? { ...s, category: e.target.value } : s)}
+                        className="w-full px-3 py-1.5 font-sans text-[0.82rem] outline-none"
+                        style={{ border: '1px solid rgba(75,94,58,0.3)', color: '#2A2A2A' }}
+                      >
+                        {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                      </select>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
@@ -200,6 +224,9 @@ export default function AdminCollections() {
                     </td>
                     <td className="px-4 py-4 font-sans text-[0.85rem]" style={{ color: '#2A2A2A' }}>{c.name}</td>
                     <td className="px-4 py-4 font-sans text-[0.78rem]" style={{ color: '#5A5A5A' }}>{c.tag}</td>
+                    <td className="px-4 py-4 font-sans text-[0.72rem]" style={{ color: '#5A5A5A' }}>
+                      {c.category ? <span className="px-2 py-0.5 rounded" style={{ background: 'rgba(75,94,58,0.1)', color: '#4B5E3A' }}>{c.category}</span> : <span style={{ color: '#BBBBB8' }}>All</span>}
+                    </td>
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-2">
                         <div className="w-7 h-7 rounded" style={{ background: c.color }} />
@@ -212,7 +239,7 @@ export default function AdminCollections() {
                     <td className="px-4 py-4">
                       <div className="flex gap-3">
                         <button
-                          onClick={() => { setEditState({ id: c.id, name: c.name, tag: c.tag, color: c.color, imageUrl: c.imageUrl ?? '' }); setAdding(false) }}
+                          onClick={() => { setEditState({ id: c.id, name: c.name, tag: c.tag, color: c.color, imageUrl: c.imageUrl ?? '', category: c.category ?? '' }); setAdding(false) }}
                           className="font-sans text-[0.7rem] border-none bg-transparent cursor-pointer transition-colors"
                           style={{ color: '#4B5E3A' }}
                           onMouseEnter={e => (e.currentTarget.style.color = '#C4922A')}

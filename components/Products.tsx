@@ -33,6 +33,12 @@ export default function Products() {
   ]
 
   useEffect(() => {
+    const handler = (e: Event) => setActiveFilter((e as CustomEvent<string>).detail)
+    window.addEventListener('miras-shop-filter', handler)
+    return () => window.removeEventListener('miras-shop-filter', handler)
+  }, [])
+
+  useEffect(() => {
     setLoading(true)
     const cat = activeFilter === 'All' ? '' : activeFilter.toLowerCase()
     fetch(`/api/products${cat ? `?category=${cat}` : ''}`)

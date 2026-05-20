@@ -9,8 +9,17 @@ interface Collection {
   tag: string
   color: string
   imageUrl: string | null
+  category: string | null
   sortOrder: number
   active: boolean
+}
+
+const filterToShop = (category: string | null) => {
+  if (category) {
+    const label = category.charAt(0).toUpperCase() + category.slice(1)
+    window.dispatchEvent(new CustomEvent('miras-shop-filter', { detail: label }))
+  }
+  document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })
 }
 
 export default function Collections() {
@@ -106,12 +115,15 @@ export default function Collections() {
               >
                 {col.name}
               </h3>
-              <a
-                href="#shop"
-                className="font-sans text-[0.65rem] tracking-[0.16em] uppercase no-underline inline-block pb-0.5 w-fit transition-colors text-gold-light border-b border-gold/40 hover:text-white hover:border-white"
+              <button
+                onClick={() => filterToShop(col.category)}
+                className="font-sans text-[0.65rem] tracking-[0.16em] uppercase inline-block pb-0.5 w-fit transition-colors border-b border-none bg-transparent cursor-pointer p-0"
+                style={{ color: '#D4A84A', borderBottom: '1px solid rgba(196,146,42,0.4)' }}
+                onMouseEnter={e => { e.currentTarget.style.color = 'white'; e.currentTarget.style.borderBottomColor = 'white' }}
+                onMouseLeave={e => { e.currentTarget.style.color = '#D4A84A'; e.currentTarget.style.borderBottomColor = 'rgba(196,146,42,0.4)' }}
               >
                 {t.col_explore}
-              </a>
+              </button>
             </div>
           </div>
         ))}

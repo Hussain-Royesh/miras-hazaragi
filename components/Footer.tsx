@@ -8,6 +8,18 @@ const socialIcons = [
   { label: '▶', name: 'YouTube' },
 ]
 
+const shopFilters = ['All', 'khamak', 'dress', 'accessories', 'embroidered']
+const aboutHrefs  = ['#story', '#artisans', '#craft', '#story', '#story']
+const helpHrefs   = ['#', '#', '#', '#', 'mailto:miras.hazaragi@gmail.com']
+
+const filterToShop = (filter: string) => {
+  if (filter !== 'All') {
+    const label = filter.charAt(0).toUpperCase() + filter.slice(1)
+    window.dispatchEvent(new CustomEvent('miras-shop-filter', { detail: label }))
+  }
+  document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })
+}
+
 export default function Footer() {
   const { t } = useLanguage()
 
@@ -56,14 +68,17 @@ export default function Footer() {
             {t.footer_shop}
           </h4>
           <ul className="list-none space-y-3">
-            {t.footer_shop_links.map(item => (
+            {t.footer_shop_links.map((item, i) => (
               <li key={item}>
-                <a
-                  href="#shop"
-                  className="text-[0.82rem] font-light no-underline transition-colors text-white/60 hover:text-white"
+                <button
+                  onClick={() => filterToShop(shopFilters[i] ?? 'All')}
+                  className="text-[0.82rem] font-light no-underline transition-colors bg-transparent border-none cursor-pointer p-0 text-left"
+                  style={{ color: 'rgba(255,255,255,0.6)' }}
+                  onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
                 >
                   {item}
-                </a>
+                </button>
               </li>
             ))}
           </ul>
@@ -78,10 +93,10 @@ export default function Footer() {
             {t.footer_about}
           </h4>
           <ul className="list-none space-y-3">
-            {t.footer_about_links.map(item => (
+            {t.footer_about_links.map((item, i) => (
               <li key={item}>
                 <a
-                  href="#story"
+                  href={aboutHrefs[i] ?? '#story'}
                   className="text-[0.82rem] font-light no-underline transition-colors text-white/60 hover:text-white"
                 >
                   {item}
@@ -100,10 +115,10 @@ export default function Footer() {
             {t.footer_help}
           </h4>
           <ul className="list-none space-y-3">
-            {t.footer_help_links.map(item => (
+            {t.footer_help_links.map((item, i) => (
               <li key={item}>
                 <a
-                  href="#"
+                  href={helpHrefs[i] ?? '#'}
                   className="text-[0.82rem] font-light no-underline transition-colors text-white/60 hover:text-white"
                 >
                   {item}
