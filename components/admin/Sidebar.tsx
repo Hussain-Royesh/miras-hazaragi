@@ -7,6 +7,7 @@ const navItems = [
   { href: '/admin', label: 'Dashboard', icon: '▣' },
   { href: '/admin/products', label: 'Products', icon: '◈' },
   { href: '/admin/collections', label: 'Collections', icon: '◉' },
+  { href: '/admin/content', label: 'Site Content', icon: '✎' },
   { href: '/admin/orders', label: 'Orders', icon: '◎' },
   { href: '/admin/customers', label: 'Customers', icon: '◌' },
   { href: '/admin/newsletter', label: 'Newsletter', icon: '◇' },

@@ -240,7 +240,7 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | null>(null)
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
+export function LanguageProvider({ children, overrides = {} }: { children: ReactNode; overrides?: Partial<T> }) {
   const [lang, setLangState] = useState<Lang>('en')
 
   useEffect(() => {
@@ -266,8 +266,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('miras-lang', l)
   }
 
+  const enWithOverrides = { ...en, ...overrides }
+
   return (
-    <LanguageContext.Provider value={{ lang, setLang, t: lang === 'fa' ? fa : en, isRTL: lang === 'fa' }}>
+    <LanguageContext.Provider value={{ lang, setLang, t: lang === 'fa' ? fa : enWithOverrides, isRTL: lang === 'fa' }}>
       {children}
     </LanguageContext.Provider>
   )

@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import ImageUpload from './ImageUpload'
 
 interface ProductFormProps {
   initial?: {
@@ -106,28 +107,18 @@ export default function ProductForm({ initial = {} }: ProductFormProps) {
         {field('Stock Qty', <input type="number" value={form.stockQty} onChange={e => set('stockQty', e.target.value)} className={inputCls} style={inputStyle} />)}
       </div>
 
-      <div className="grid grid-cols-2 gap-5">
-        {field('Placeholder Color', (
-          <div className="flex gap-3 items-center">
-            <input type="color" value={form.color} onChange={e => set('color', e.target.value)}
-              className="w-12 h-10 cursor-pointer border-0 p-0.5" style={{ ...inputStyle }} />
-            <input value={form.color} onChange={e => set('color', e.target.value)}
-              className={inputCls} style={inputStyle} />
-          </div>
-        ))}
-        {field('Image URL — optional', (
-          <div>
-            <input type="url" value={form.imageUrl} onChange={e => set('imageUrl', e.target.value)} className={inputCls} style={inputStyle} placeholder="https://..." />
-            {form.imageUrl && (
-              <div className="mt-2 flex gap-3 items-start">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={form.imageUrl} alt="Preview" className="object-cover rounded-sm" style={{ width: '56px', height: '84px' }} onError={e => (e.currentTarget.style.display = 'none')} onLoad={e => (e.currentTarget.style.display = 'block')} />
-                <p className="font-sans text-[0.68rem] mt-1" style={{ color: '#5A5A5A' }}>Preview</p>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+      {field('Placeholder Color', (
+        <div className="flex gap-3 items-center">
+          <input type="color" value={form.color} onChange={e => set('color', e.target.value)}
+            className="w-12 h-10 cursor-pointer border-0 p-0.5" style={{ ...inputStyle }} />
+          <input value={form.color} onChange={e => set('color', e.target.value)}
+            className={inputCls} style={inputStyle} />
+        </div>
+      ))}
+
+      {field('Product Image', (
+        <ImageUpload value={form.imageUrl} onChange={v => set('imageUrl', v)} />
+      ))}
 
       <div className="flex items-center gap-3">
         <input type="checkbox" id="inStock" checked={form.inStock} onChange={e => set('inStock', e.target.checked)} className="w-4 h-4 cursor-pointer accent-green" />

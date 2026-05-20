@@ -1,14 +1,15 @@
 'use client'
 import { useEffect, useState } from 'react'
+import ImageUpload from '@/components/admin/ImageUpload'
 
-interface Collection { id: string; name: string; tag: string; color: string; active: boolean; sortOrder: number }
-interface EditState { id: string; name: string; tag: string; color: string }
+interface Collection { id: string; name: string; tag: string; color: string; imageUrl: string | null; active: boolean; sortOrder: number }
+interface EditState { id: string; name: string; tag: string; color: string; imageUrl: string }
 
 export default function AdminCollections() {
   const [cols, setCols] = useState<Collection[]>([])
   const [loading, setLoading] = useState(true)
   const [adding, setAdding] = useState(false)
-  const [addForm, setAddForm] = useState({ name: '', tag: '', color: '#3A4A2C' })
+  const [addForm, setAddForm] = useState({ name: '', tag: '', color: '#3A4A2C', imageUrl: '' })
   const [editState, setEditState] = useState<EditState | null>(null)
   const [saving, setSaving] = useState(false)
 
@@ -21,9 +22,9 @@ export default function AdminCollections() {
     await fetch('/api/admin/collections', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(addForm),
+      body: JSON.stringify({ ...addForm, imageUrl: addForm.imageUrl || null }),
     })
-    setSaving(false); setAdding(false); setAddForm({ name: '', tag: '', color: '#3A4A2C' }); load()
+    setSaving(false); setAdding(false); setAddForm({ name: '', tag: '', color: '#3A4A2C', imageUrl: '' }); load()
   }
 
   const saveEdit = async (id: string) => {
@@ -32,7 +33,7 @@ export default function AdminCollections() {
     await fetch(`/api/admin/collections/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: editState.name, tag: editState.tag, color: editState.color }),
+      body: JSON.stringify({ name: editState.name, tag: editState.tag, color: editState.color, imageUrl: editState.imageUrl || null }),
     })
     setSaving(false); setEditState(null); load()
   }
@@ -77,22 +78,28 @@ export default function AdminCollections() {
       {adding && (
         <form
           onSubmit={create}
-          className="bg-white p-6 mb-6 grid grid-cols-3 gap-4 items-end"
+          className="bg-white p-6 mb-6 space-y-4"
           style={{ border: '1px solid rgba(75,94,58,0.1)' }}
         >
-          <div>
-            <label className="block font-sans text-[0.65rem] tracking-[0.1em] uppercase mb-1" style={{ color: '#5A5A5A' }}>Name</label>
-            <input required value={addForm.name} onChange={e => setAddForm(f => ({ ...f, name: e.target.value }))} className={inputCls} style={inputStyle} />
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="block font-sans text-[0.65rem] tracking-[0.1em] uppercase mb-1" style={{ color: '#5A5A5A' }}>Name</label>
+              <input required value={addForm.name} onChange={e => setAddForm(f => ({ ...f, name: e.target.value }))} className={inputCls} style={inputStyle} />
+            </div>
+            <div>
+              <label className="block font-sans text-[0.65rem] tracking-[0.1em] uppercase mb-1" style={{ color: '#5A5A5A' }}>Tag / Label</label>
+              <input required value={addForm.tag} onChange={e => setAddForm(f => ({ ...f, tag: e.target.value }))} className={inputCls} style={inputStyle} placeholder="e.g. New Arrival" />
+            </div>
+            <div>
+              <label className="block font-sans text-[0.65rem] tracking-[0.1em] uppercase mb-1" style={{ color: '#5A5A5A' }}>Colour</label>
+              <input type="color" value={addForm.color} onChange={e => setAddForm(f => ({ ...f, color: e.target.value }))} className="w-full h-10 cursor-pointer p-0.5" style={inputStyle} />
+            </div>
           </div>
           <div>
-            <label className="block font-sans text-[0.65rem] tracking-[0.1em] uppercase mb-1" style={{ color: '#5A5A5A' }}>Tag / Label</label>
-            <input required value={addForm.tag} onChange={e => setAddForm(f => ({ ...f, tag: e.target.value }))} className={inputCls} style={inputStyle} placeholder="e.g. New Arrival" />
+            <label className="block font-sans text-[0.65rem] tracking-[0.1em] uppercase mb-2" style={{ color: '#5A5A5A' }}>Image</label>
+            <ImageUpload value={addForm.imageUrl} onChange={v => setAddForm(f => ({ ...f, imageUrl: v }))} />
           </div>
-          <div>
-            <label className="block font-sans text-[0.65rem] tracking-[0.1em] uppercase mb-1" style={{ color: '#5A5A5A' }}>Colour</label>
-            <input type="color" value={addForm.color} onChange={e => setAddForm(f => ({ ...f, color: e.target.value }))} className="w-full h-10 cursor-pointer p-0.5" style={inputStyle} />
-          </div>
-          <div className="col-span-3 flex gap-3">
+          <div className="flex gap-3">
             <button
               type="submit"
               disabled={saving}
@@ -124,16 +131,21 @@ export default function AdminCollections() {
           <table className="w-full">
             <thead>
               <tr style={{ borderBottom: '1px solid rgba(75,94,58,0.1)' }}>
-                {['Collection', 'Tag', 'Colour', 'Active', ''].map(h => (
-                  <th key={h} className="text-left px-6 py-3 font-sans text-[0.65rem] tracking-[0.1em] uppercase" style={{ color: '#5A5A5A' }}>{h}</th>
+                {['Image', 'Collection', 'Tag', 'Colour', 'Active', ''].map(h => (
+                  <th key={h} className="text-left px-4 py-3 font-sans text-[0.65rem] tracking-[0.1em] uppercase" style={{ color: '#5A5A5A' }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {cols.map(c =>
                 editState?.id === c.id ? (
-                  /* ── Edit row ── */
                   <tr key={c.id} style={{ borderBottom: '1px solid rgba(75,94,58,0.06)', background: '#FDFCFA' }}>
+                    <td className="px-4 py-3">
+                      <ImageUpload
+                        value={editState.imageUrl}
+                        onChange={v => setEditState(s => s ? { ...s, imageUrl: v } : s)}
+                      />
+                    </td>
                     <td className="px-4 py-3">
                       <input
                         value={editState.name}
@@ -167,48 +179,40 @@ export default function AdminCollections() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-3">
-                        <button
-                          onClick={() => saveEdit(c.id)}
-                          disabled={saving}
-                          className="font-sans text-[0.7rem] border-none bg-transparent cursor-pointer disabled:opacity-60"
-                          style={{ color: '#4B5E3A' }}
-                        >
+                        <button onClick={() => saveEdit(c.id)} disabled={saving} className="font-sans text-[0.7rem] border-none bg-transparent cursor-pointer disabled:opacity-60" style={{ color: '#4B5E3A' }}>
                           {saving ? 'Saving…' : 'Save'}
                         </button>
-                        <button
-                          onClick={() => setEditState(null)}
-                          className="font-sans text-[0.7rem] border-none bg-transparent cursor-pointer"
-                          style={{ color: '#5A5A5A' }}
-                        >
+                        <button onClick={() => setEditState(null)} className="font-sans text-[0.7rem] border-none bg-transparent cursor-pointer" style={{ color: '#5A5A5A' }}>
                           Cancel
                         </button>
                       </div>
                     </td>
                   </tr>
                 ) : (
-                  /* ── Normal row ── */
                   <tr key={c.id} style={{ borderBottom: '1px solid rgba(75,94,58,0.06)' }}>
-                    <td className="px-6 py-4 font-sans text-[0.85rem]" style={{ color: '#2A2A2A' }}>{c.name}</td>
-                    <td className="px-6 py-4 font-sans text-[0.78rem]" style={{ color: '#5A5A5A' }}>{c.tag}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-3">
+                      {c.imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={c.imageUrl} alt={c.name} className="object-cover rounded-sm" style={{ width: '40px', height: '56px' }} />
+                      ) : (
+                        <div className="rounded-sm" style={{ width: '40px', height: '56px', background: c.color, opacity: 0.5 }} />
+                      )}
+                    </td>
+                    <td className="px-4 py-4 font-sans text-[0.85rem]" style={{ color: '#2A2A2A' }}>{c.name}</td>
+                    <td className="px-4 py-4 font-sans text-[0.78rem]" style={{ color: '#5A5A5A' }}>{c.tag}</td>
+                    <td className="px-4 py-4">
                       <div className="flex items-center gap-2">
                         <div className="w-7 h-7 rounded" style={{ background: c.color }} />
                         <span className="font-sans text-[0.68rem]" style={{ color: '#5A5A5A' }}>{c.color}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <input
-                        type="checkbox"
-                        checked={c.active}
-                        onChange={e => toggle(c.id, e.target.checked)}
-                        className="w-4 h-4 cursor-pointer"
-                        style={{ accentColor: '#4B5E3A' }}
-                      />
+                    <td className="px-4 py-4">
+                      <input type="checkbox" checked={c.active} onChange={e => toggle(c.id, e.target.checked)} className="w-4 h-4 cursor-pointer" style={{ accentColor: '#4B5E3A' }} />
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-4">
                       <div className="flex gap-3">
                         <button
-                          onClick={() => { setEditState({ id: c.id, name: c.name, tag: c.tag, color: c.color }); setAdding(false) }}
+                          onClick={() => { setEditState({ id: c.id, name: c.name, tag: c.tag, color: c.color, imageUrl: c.imageUrl ?? '' }); setAdding(false) }}
                           className="font-sans text-[0.7rem] border-none bg-transparent cursor-pointer transition-colors"
                           style={{ color: '#4B5E3A' }}
                           onMouseEnter={e => (e.currentTarget.style.color = '#C4922A')}

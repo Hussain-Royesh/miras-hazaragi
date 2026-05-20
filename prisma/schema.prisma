@@ -88,3 +88,9 @@ model NewsletterSubscriber {
   email        String   @unique
   subscribedAt DateTime @default(now())
 }
+
+model SiteSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}

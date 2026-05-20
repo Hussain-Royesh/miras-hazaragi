@@ -4,6 +4,7 @@ import './globals.css'
 import { CartProvider } from '@/context/CartContext'
 import { NavProvider } from '@/context/NavContext'
 import { LanguageProvider } from '@/context/LanguageContext'
+import { prisma } from '@/lib/prisma'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -31,11 +32,15 @@ export const metadata: Metadata = {
   keywords: ['Hazargi', 'Khamak', 'Afghan clothing', 'embroidery', 'handmade'],
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const rows = await prisma.siteSetting.findMany()
+  const overrides: Record<string, string> = {}
+  for (const r of rows) overrides[r.key] = r.value
+
   return (
     <html lang="en" className={`${cormorant.variable} ${jost.variable} ${vazirmatn.variable}`}>
       <body>
-        <LanguageProvider>
+        <LanguageProvider overrides={overrides}>
           <NavProvider>
             <CartProvider>{children}</CartProvider>
           </NavProvider>
